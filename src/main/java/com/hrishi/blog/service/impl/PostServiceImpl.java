@@ -3,11 +3,15 @@ package com.hrishi.blog.service.impl;
 import com.hrishi.blog.entity.Post;
 import com.hrishi.blog.exception.ResourceNotFoundException;
 import com.hrishi.blog.payload.PostDto;
+import com.hrishi.blog.payload.PostResponse;
 import com.hrishi.blog.repository.PostRepository;
 import com.hrishi.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,8 +28,25 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getPosts() {
-        return postRepository.findAll().stream().map(this::fromPostToPostDto).collect(Collectors.toList());
+    public PostResponse getPosts(int page, int size, String sortBy, String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Post> posts = postRepository.findAll(pageable);
+
+        List<PostDto> postDtos = posts.stream().map(this::fromPostToPostDto).toList();
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPage(page);
+        postResponse.setSize(size);
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setLast(posts.isLast());
+
+        return postResponse;
     }
 
     @Override
