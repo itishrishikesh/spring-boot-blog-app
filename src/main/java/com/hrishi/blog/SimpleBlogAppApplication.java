@@ -1,6 +1,8 @@
 package com.hrishi.blog;
 
+import com.hrishi.blog.entity.Role;
 import com.hrishi.blog.entity.User;
+import com.hrishi.blog.repository.RoleRepository;
 import com.hrishi.blog.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
@@ -20,12 +22,5 @@ public class SimpleBlogAppApplication {
 	@Bean
 	public ModelMapper getMapper() {
 		return new ModelMapper();
-	}
-
-	@Bean
-	public CommandLineRunner runner(UserRepository userRepository, PasswordEncoder encoder) {
-		return args -> {
-			userRepository.save(new User(0L, "ramesh", "ramesh", "ramesh@gmail.com", encoder.encode("pass"), null));
-		};
 	}
 }
