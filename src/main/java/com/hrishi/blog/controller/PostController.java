@@ -4,9 +4,11 @@ import com.hrishi.blog.entity.Post;
 import com.hrishi.blog.payload.PostDto;
 import com.hrishi.blog.payload.PostResponse;
 import com.hrishi.blog.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +21,8 @@ import static com.hrishi.blog.utils.Constants.DEFAULT_PAGE_NUMBER;
 public class PostController {
     private final PostService postService;
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         return ResponseEntity.ok(postService.createPost(postDto));
     }
     @GetMapping
@@ -36,11 +39,13 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(id));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable Long id) {
         return ResponseEntity.ok(postService.updatePost(postDto, id));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return ResponseEntity.ok().build();
