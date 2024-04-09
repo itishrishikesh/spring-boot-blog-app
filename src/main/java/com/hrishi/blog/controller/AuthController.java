@@ -1,5 +1,6 @@
 package com.hrishi.blog.controller;
 
+import com.hrishi.blog.payload.JwtAuthResponse;
 import com.hrishi.blog.payload.LoginDto;
 import com.hrishi.blog.payload.RegisterDto;
 import com.hrishi.blog.service.AuthService;
@@ -15,8 +16,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(value = {"/login", "/signin"})
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
-        return ResponseEntity.ok(authService.login(loginDto));
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto) {
+
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setAccessToken(authService.login(loginDto));
+
+        return ResponseEntity.ok(jwtAuthResponse);
     }
 
     @PostMapping(value = {"/register", "/signup"})

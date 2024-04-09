@@ -8,6 +8,7 @@ import com.hrishi.blog.payload.RegisterDto;
 import com.hrishi.blog.repository.RoleRepository;
 import com.hrishi.blog.repository.UserRepository;
 import com.hrishi.blog.security.CustomUserDetailsService;
+import com.hrishi.blog.security.JwtTokenProvider;
 import com.hrishi.blog.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public String login(LoginDto loginDto) {
@@ -37,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return "Success! User is logged in now.";
+        return jwtTokenProvider.generateToken(authentication);
     }
 
     @Override
