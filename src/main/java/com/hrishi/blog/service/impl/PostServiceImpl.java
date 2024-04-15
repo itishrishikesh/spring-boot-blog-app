@@ -1,9 +1,11 @@
 package com.hrishi.blog.service.impl;
 
+import com.hrishi.blog.entity.Category;
 import com.hrishi.blog.entity.Post;
 import com.hrishi.blog.exception.ResourceNotFoundException;
 import com.hrishi.blog.payload.PostDto;
 import com.hrishi.blog.payload.PostResponse;
+import com.hrishi.blog.repository.CategoryRepository;
 import com.hrishi.blog.repository.PostRepository;
 import com.hrishi.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +24,19 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public PostDto createPost(PostDto postDto) {
-        Post post = postRepository.save(fromPostDtoToPost(postDto));
+
+        Category category = categoryRepository.findById(postDto.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("category", "id", postDto.getCategoryId().toString()));
+
+        Post post = fromPostDtoToPost(postDto);
+
+        post.setCategory(category);
+
+        post = postRepository.save(post);
+
         return fromPostToPostDto(post);
     }
 
@@ -59,10 +70,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto updatePost(PostDto postDto, Long id) {
+        Category category = categoryRepository.findById(postDto.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("category", "id", postDto.getCategoryId().toString()));
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id.toString()));
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
         post.setContent(postDto.getContent());
+        post.setCategory(category);
         return fromPostToPostDto(postRepository.save(post));
     }
 
@@ -70,6 +83,12 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id.toString()));
         postRepository.delete(post);
+    }
+
+    @Override
+    public List<PostDto> getPostByCategory(Long id) {
+        List<Post> posts = postRepository.findByCategoryId(id);
+        return posts.stream().map(this::fromPostToPostDto).toList();
     }
 
     private Post fromPostDtoToPost(PostDto postDto) {
