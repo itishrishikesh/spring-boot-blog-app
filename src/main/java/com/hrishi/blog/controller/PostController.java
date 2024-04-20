@@ -4,6 +4,7 @@ import com.hrishi.blog.entity.Post;
 import com.hrishi.blog.payload.PostDto;
 import com.hrishi.blog.payload.PostResponse;
 import com.hrishi.blog.service.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,9 @@ public class PostController {
     private final PostService postService;
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(
+            name = "Bearer Authentication"
+    )
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         return ResponseEntity.ok(postService.createPost(postDto));
     }
@@ -40,12 +44,18 @@ public class PostController {
     }
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(
+            name = "Bearer Authentication"
+    )
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable Long id) {
         return ResponseEntity.ok(postService.updatePost(postDto, id));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(
+            name = "Bearer Authentication"
+    )
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return ResponseEntity.ok().build();

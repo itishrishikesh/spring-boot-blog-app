@@ -2,6 +2,7 @@ package com.hrishi.blog.controller;
 
 import com.hrishi.blog.payload.CategoryDto;
 import com.hrishi.blog.service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,9 @@ public class CategoryController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(
+            name = "Bearer Authentication"
+    )
     public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
         CategoryDto savedCategory = categoryService.addCategory(categoryDto);
         return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
