@@ -38,4 +38,11 @@ public class CommentController {
         commentService.deleteCommentById(postId, commentId);
         return ResponseEntity.ok().build();
     }
+
+
+    @GetMapping("/getting")
+    public ResponseEntity<CommentDto> gettingComment()
+    {
+        return ResponseEntity.ok( null);
+    }
 }
