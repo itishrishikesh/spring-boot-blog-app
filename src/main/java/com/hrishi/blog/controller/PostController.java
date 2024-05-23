@@ -65,4 +65,9 @@ public class PostController {
     public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable Long id) {
         return ResponseEntity.ok(postService.getPostByCategory(id));
     }
+
+    @GetMapping("/newFeature")
+    public ResponseEntity<PostDto> newFeature() {
+        return ResponseEntity.ok(null);
+    }
 }
